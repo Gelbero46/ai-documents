@@ -14,6 +14,7 @@ export async function POST(req: Request) {
     if (!question?.trim() || !documentId) {
       return new Response("Missing question or documentId", { status: 400 });
     }
+
     const embeddings = new OpenAIEmbeddings({
       openAIApiKey: process.env.OPENAI_API_KEY!,
     });
@@ -36,24 +37,42 @@ export async function POST(req: Request) {
 
     const openai = new OpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY!,
+      temperature: 0, // For deterministic responses
     });
 
-    const prompt = `You are a helpful AI assistant. Using the following context from a document, 
-    please answer the user's question accurately and concisely. If the context doesn't contain 
-    relevant information to answer the question, please say so.
+    const prompt = `You are a helpful AI assistant. Using the following context from the note below, 
+    please answer the question accurately and concisely. If the context doesn't contain 
+    relevant information to answer the question, please say so. Your response should a json object
+    with keys "answer" and "search" where "answer" is the answer to the question and "search"
+    is a substring of the context following consecutively and related to the answer. 
 
 Context:
+\`\`\`
 ${contentText}
+\`\`\`
 
 Question: ${question}
 
-    Answer:`;
+Output the response in this exact JSON format:
+{
+  "answer": "string",
+  "search": "string"
+}`;
 
     const response = await openai.invoke(prompt);
+    // console.log("response:", response);
+    let jsonObject;
+    try {
+      jsonObject = JSON.parse(response);
+      // console.log("jsonObject:", jsonObject);
+    } catch (err) {
+      console.error("Error parsing JSON:", response);
+      return NextResponse.json({
+        answer: "I couldn't parse the response.",
+      });
+    }
 
-    return NextResponse.json({
-      answer: response,
-    });
+    return NextResponse.json(jsonObject);
   } catch (error) {
     console.error("Error processing question:", error);
     return NextResponse.json({
