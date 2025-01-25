@@ -86,6 +86,8 @@ export default function Home() {
 
       const data = await response.json();
       const dataSearch = data.search.toString().trim().replace(/\.$/,'').replace(/\s+/g, ' ')
+      console.log("data.answer", data.answer)
+      console.log("data.search", dataSearch)
       triggerSearch(dataSearch)
       return data.answer;
       
@@ -108,13 +110,18 @@ export default function Home() {
 
   const pdfViewerRef = useRef<any>();
 
+  // const triggerSearch = (text: string) => {
+  //     pdfViewerRef.current.search({
+  //         keyword: text,
+  //         matchCase: false,
+  //         wholeWords: false,
+  //     });
+  // };
+
   const triggerSearch = (text: string) => {
-      pdfViewerRef.current.search({
-          keyword: text,
-          matchCase: false,
-          wholeWords: false,
-      });
-  };
+    pdfViewerRef.current.search(text);
+};
+
 
   return (
     <div className="container mx-auto p-4">

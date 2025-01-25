@@ -60,11 +60,11 @@ Output the response in this exact JSON format:
 }`;
 
     const response = await openai.invoke(prompt);
-    // console.log("response:", response);
+    console.log("response:", response);
     let jsonObject;
     try {
       jsonObject = JSON.parse(response);
-      // console.log("jsonObject:", jsonObject);
+      console.log("jsonObject:", jsonObject);
     } catch (err) {
       console.error("Error parsing JSON:", response);
       return NextResponse.json({

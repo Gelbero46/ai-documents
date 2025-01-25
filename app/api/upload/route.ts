@@ -64,11 +64,14 @@ export async function POST(req: Request) {
       pineconeIndex: index,
     });
 
+    console.log("summary", summary)
+
     return NextResponse.json({
       summary,
       documentId,
       pageCount: docs.length,
     });
+
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
