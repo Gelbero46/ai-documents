@@ -46,11 +46,11 @@ const PdfViewer = forwardRef(({ fileUrl }: HighlightKeywordsExampleProps, ref) =
 
     // Expose the search function to the parent component
     useImperativeHandle(ref, () => ({
-        search: (text: string) => {
-            const splitKeywords = splitString(text, 40); // Max 30 characters per segment
-            setSegments(splitKeywords);
-            console.log("splitKeywords", splitKeywords)
-            highlight(splitKeywords)
+        search: (searchArray: string[]) => {
+            // const splitKeywords = splitString(text, 50); // Max 30 characters per segment
+            // setSegments(splitKeywords);
+            const joinedString = searchArray.map(str => str.trim()).join('')
+            highlight(joinedString)
             // splitKeywords.forEach((keyword) => highlight(keyword));
         },
     }));
@@ -76,10 +76,10 @@ const PdfViewer = forwardRef(({ fileUrl }: HighlightKeywordsExampleProps, ref) =
                         onChange={(e) => setCurrentKeyword(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && currentKeyword.trim()) {
-                                const splitKeywords = splitString(currentKeyword, 50);
-                                setSegments(splitKeywords);
-                                console.log("splitKeywords", splitKeywords)
-                                splitKeywords.forEach((keyword) => highlight(keyword));
+                                // const splitKeywords = splitString(currentKeyword, 50);
+                                // setSegments(splitKeywords);
+                                // splitKeywords.forEach((keyword) => highlight(keyword));
+                                highlight(currentKeyword)
                             }
                         }}
                     />

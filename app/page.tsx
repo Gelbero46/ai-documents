@@ -10,8 +10,17 @@ import { ChatInterface } from "@/components/chat-interface";
 import { DocumentMetadata } from "@/lib/types";
 import { DocumentHistory } from "@/components/document-history";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { DataSourceCard } from "@/components/data-source";
 
 const PdfViewer = dynamic(() => import("@/components/pdf-viewer"), { ssr: false });
+
+type DataSourcesType = {
+  pageContent: string[];
+  metadata: {
+    pageNumber?: number;
+    [key: string]: any; 
+  };
+}
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -22,6 +31,7 @@ export default function Home() {
   const [currentDocument, setCurrentDocument] = useState<DocumentMetadata>();
 
   const [fileUrl, SetfileUrl] = useState<string>("");
+  const [dataSources, setDataSources] = useState<DataSourcesType[]>([]);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     try {
@@ -54,6 +64,7 @@ export default function Home() {
       SetfileUrl(url)
       setDocuments((prev) => [...prev, newDoc]);
       setCurrentDocument(newDoc);
+      setDataSources([])
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "An unknown error occurred"
@@ -85,10 +96,11 @@ export default function Home() {
       }
 
       const data = await response.json();
-      const dataSearch = data.search.toString().trim().replace(/\.$/,'').replace(/\s+/g, ' ')
-      console.log("data.answer", data.answer)
-      console.log("data.search", dataSearch)
-      triggerSearch(dataSearch)
+      // const dataSearch = data.search.toString().trim().replace(/\.$/,'').replace(/\s+/g, ' ')
+      const dataSearch = data.sources
+
+      setDataSources(dataSearch)
+      triggerSearch(dataSearch[0].pageContent)
       return data.answer;
       
     } catch (error) {
@@ -118,8 +130,8 @@ export default function Home() {
   //     });
   // };
 
-  const triggerSearch = (text: string) => {
-    pdfViewerRef.current.search(text);
+  const triggerSearch = (searchArray: string[]) => {
+    pdfViewerRef.current.search(searchArray);
 };
 
 
@@ -183,6 +195,9 @@ export default function Home() {
             onSelect={handleDocumentSelect}
             currentId={currentDocument?.id}
           />
+
+          <DataSourceCard sources={dataSources} triggerSearch={triggerSearch} />
+
           <div className="mt-8">
             <PdfViewer ref={pdfViewerRef} fileUrl={fileUrl} />
           </div>
