@@ -34,7 +34,7 @@ export function DataSourceCard({
           No sources available.
         </p>
       ) : (
-        <ScrollArea className="h-[300px]">
+        <ScrollArea className="h-[250px]">
           {sources.map((source, index) => (
             <div
               key={index}
@@ -45,7 +45,7 @@ export function DataSourceCard({
                 Page {source.metadata.pageNumber ?? "Unknown"}
               </div>
               <p className="text-sm">
-                {truncateContent(source.pageContent.join(), 30)}
+                {truncateContent(source.pageContent.join(), 20)}
               </p>
             </div>
           ))}

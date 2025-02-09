@@ -6,6 +6,9 @@ import { Card } from "@/components/ui/card";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle  } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Button } from "@/components/ui/button";
 import { ChatInterface } from "@/components/chat-interface";
 import { DocumentMetadata } from "@/lib/types";
 import { DocumentHistory } from "@/components/document-history";
@@ -32,6 +35,7 @@ export default function Home() {
 
   const [fileUrl, SetfileUrl] = useState<string>("");
   const [dataSources, setDataSources] = useState<DataSourcesType[]>([]);
+  const [isFullScreenModalOpen, setFullScreenModalOpen] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     try {
@@ -143,6 +147,29 @@ export default function Home() {
           <ThemeToggle />
         </div>
       </div>
+      {/* Fullscreen Modal for PDF and Data Sources */}
+      <Dialog open={isFullScreenModalOpen} onOpenChange={setFullScreenModalOpen}>
+        <DialogTrigger asChild>
+          <Button variant="default" className="mb-4">
+            View PDF & Data Sources Fullscreen
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="p-0 max-w-full w-full h-[100vh]">
+        <VisuallyHidden>
+          <DialogTitle>Accessible Hidden Title</DialogTitle>
+        </VisuallyHidden>
+          <div className="grid grid-cols-2 gap-6 h-full">
+            <div className="border p-4">
+              <PdfViewer ref={pdfViewerRef} fileUrl={fileUrl} />
+            </div>
+            <div className="border p-4 overflow-y-auto">
+              <DataSourceCard sources={dataSources} triggerSearch={triggerSearch} />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+  
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <Card className="p-6 mb-8">

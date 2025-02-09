@@ -21,7 +21,7 @@ export function DocumentHistory({
           No documents uploaded yet.
         </p>
       ) : (
-        <ScrollArea className="h-[300px]">
+        <ScrollArea className="max-h-[300px] overflow-auto">
           {documents.map((doc) => (
             <div
               key={doc.id}
